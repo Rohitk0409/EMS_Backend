@@ -24,6 +24,7 @@ app.use(cookieParser());
 
 const authRoutes = require("./routes/auth.route");
 const userRoutes = require("./routes/user.route");
+const logRoutes = require("./routes/logs.route");
 
 app.get("/", (req, res) => {
   res.send("Server is working 🚀");
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/log", logRoutes);
 
 const port = process.env.PORT || 1000;
 

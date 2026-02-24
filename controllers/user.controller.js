@@ -1,5 +1,6 @@
 const User = require("../schema/user.schema");
 const bcrypt = require("bcryptjs");
+const { createLog } = require("./logs.controller");
 
 // 🔹 CREATE USER (Employee)
 exports.createUser = async (req, res) => {
@@ -31,6 +32,14 @@ exports.createUser = async (req, res) => {
       role: role || "employee",
       password: defaultPassword,
       companyId,
+    });
+
+    // logs stored
+    await createLog({
+      userId: req?.user?.id,
+      companyId: req.user.companyId,
+      action: "CREATE",
+      message: `New employee ${user.name} added`,
     });
 
     res.status(201).json({
@@ -79,6 +88,13 @@ exports.updateUser = async (req, res) => {
       { new: true, runValidators: true },
     ).select("-password");
 
+    // logs stored
+    await createLog({
+      userId: req?.user?.id,
+      companyId: req.user.companyId,
+      action: "UPDATE",
+      message: ` employee ${user.name} Updated`,
+    });
     if (!user) {
       return res.status(404).json({
         message: "User not found in this company",
@@ -103,6 +119,20 @@ exports.deleteUser = async (req, res) => {
       _id: id,
       companyId: req.user.companyId, // 🔥 prevent cross-company delete
     });
+
+    // logs stored
+    await createLog({
+      userId: req?.user?.id,
+      companyId: req.user.companyId,
+      action: "UPDATE",
+      message: ` employee ${user.name} Deleted`,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found in this company",
+      });
+    }
 
     if (!user) {
       return res.status(404).json({
