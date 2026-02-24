@@ -9,12 +9,20 @@ dotenv.config();
 const app = express();
 
 // CORS middleware (before routes)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ems-frontend-rohit-kumar-patels-projects.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // local dev
-      "https://ems-backend-ujk8.onrender.com", // production frontend
-    ],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
