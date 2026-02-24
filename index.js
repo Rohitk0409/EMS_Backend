@@ -11,7 +11,10 @@ const app = express();
 // CORS middleware (before routes)
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173", // local dev
+      "https://ems-backend-ujk8.onrender.com", // production frontend
+    ],
     credentials: true,
   }),
 );
