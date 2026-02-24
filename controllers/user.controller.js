@@ -124,7 +124,7 @@ exports.deleteUser = async (req, res) => {
     await createLog({
       userId: req?.user?.id,
       companyId: req.user.companyId,
-      action: "UPDATE",
+      action: "DELETE",
       message: ` employee ${user.name} Deleted`,
     });
 
