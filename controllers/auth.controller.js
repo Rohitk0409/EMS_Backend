@@ -18,6 +18,18 @@ const generateToken = (user) => {
   );
 };
 
+// Helper for cookie options
+const getCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  return {
+    httpOnly: true,
+    secure: isProduction, // true in production (HTTPS)
+    sameSite: isProduction ? "none" : "lax", // required for cross-origin
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  };
+};
+
 // 🔹 ADMIN REGISTER
 exports.registerAdmin = async (req, res) => {
   try {
@@ -53,13 +65,8 @@ exports.registerAdmin = async (req, res) => {
 
     const token = generateToken(admin);
 
-    // ✅ Set Cookie
-    res.cookie("accessToken", token, {
-      httpOnly: true,
-      secure: false, // true in production (HTTPS)
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
+    // ✅ Set Cookie (Correct way)
+    res.cookie("accessToken", token, getCookieOptions());
 
     res.status(201).json({
       message: "Admin registered successfully",
@@ -94,25 +101,28 @@ exports.login = async (req, res) => {
 
     const token = generateToken(user);
 
-    // ✅ Set Cookie
-    res.cookie("accessToken", token, {
-      httpOnly: true,
-      secure: false, // true in production
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    // ✅ Set Cookie (Correct way)
+    res.cookie("accessToken", token, getCookieOptions());
 
     res.status(200).json({
       message: "Admin login successful",
       companyId: user.companyId,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
 // 🔹 LOGOUT
 exports.logout = (req, res) => {
-  res.clearCookie("accessToken");
+  const isProduction = process.env.NODE_ENV === "production";
+
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  });
+
   res.status(200).json({ message: "Logged out successfully" });
 };
