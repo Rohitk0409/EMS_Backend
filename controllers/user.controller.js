@@ -82,7 +82,7 @@ exports.updateUser = async (req, res) => {
     const user = await User.findOneAndUpdate(
       {
         _id: id,
-        companyId: req.user.companyId, // 🔥 protect cross-company access
+        companyId: req.user.companyId, // protect cross-company access
       },
       req.body,
       { new: true, runValidators: true },
